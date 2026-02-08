@@ -6,14 +6,8 @@ namespace Unity.FPS.AI
     [RequireComponent(typeof(EnemyController))]
     public class EnemyMobile : MonoBehaviour
     {
-        
-        // Add AI State: Cohesion.
-        // Enemies act like electric charges according to type
-        // - SmallBots are attracted to BigBots and repelled by SmallBots
-        // - vice versa for BigBots
         public enum AIState
         {
-            Cohesion,
             Patrol,
             Follow,
             Attack,
@@ -43,81 +37,6 @@ namespace Unity.FPS.AI
         const string k_AnimAlertedParameter = "Alerted";
         const string k_AnimOnDamagedParameter = "OnDamaged";
 
-
-        // Cohesion Behaviour Variables and Methods
-        [Header("Cohesion")]
-        [SerializeField] public float m_scanRadius = 5f;
-        [SerializeField] public LayerMask m_ScanLayer; // Maybe not serialized
-        [SerializeField] public int m_CohesionCharge = 0;
-
-        public Collider[] m_scanResults = new Collider[10]; // Nearby allies to dictate forces
-
-
-        // Each frame, enemies scan for allies within a radius. 
-        // Allies exert movement forces, which are resolved as a movement vector
-        // Sets movement target to outcome
-        // < Maybe so that scans only happen after reaching destination >
-        // < or maybe not - whichever is cooler/faster >
-        public Vector3 CohesionUpdate()
-        {
-            int nearbyNeighbours = Physics.OverlapSphereNonAlloc(
-                transform.position,
-                m_scanRadius,
-                m_scanResults,
-                m_ScanLayer
-                );
-
-            if (nearbyNeighbours > 0)
-            { 
-                Vector3 steeringForce = CalculateCohesionForce( nearbyNeighbours );
-                return steeringForce;
-            } 
-            else
-            {
-                return Vector3.zero;
-                // find nearest neighbours of each type, then calculate cohesionForce
-            }
-
-            
-
-        }
-
-        // Moves through results of scan (nearby allies)
-        // For each object in the scan, calculate 'force' exerted on this object
-        public Vector3 CalculateCohesionForce(int count)
-        {
-            Vector3 totalForce = Vector3.zero;
-
-            for (int i = 0; i < count; i++)
-            {
-                GameObject neighbour = m_scanResults[i].gameObject;
-
-                // Ignore self
-                if (neighbour == this.gameObject) continue;
-
-                // Get details of target
-                if (neighbour.TryGetComponent<EnemyMobile>(out EnemyMobile stats))
-                {
-                    // Charge Variable
-                    float neighbourCharge = stats.m_CohesionCharge;
-
-                    // Distance
-                    Vector3 diff = transform.position - neighbour.transform.position;
-                    float distance = diff.magnitude;
-
-                    // Vector addition
-                    // Cohesion rules follow inverse square law
-                    if (distance > 0)
-                    {
-                        float forceMagnitude = (m_CohesionCharge * neighbourCharge) / (distance * distance);
-                        totalForce += diff.normalized * forceMagnitude;
-                    }
-                }
-            }
-
-            return totalForce;
-        }
-
         void Start()
         {
             m_EnemyController = GetComponent<EnemyController>();
@@ -130,9 +49,8 @@ namespace Unity.FPS.AI
             m_EnemyController.SetPathDestinationToClosestNode();
             m_EnemyController.onDamaged += OnDamaged;
 
-            // Start patrolling
-            //AiState = AIState.Patrol;
-            AiState = AIState.Cohesion;
+            // Start patrol behaviour
+            AiState = AIState.Patrol;
 
             // adding a audio source to play the movement sound on it
             m_AudioSource = GetComponent<AudioSource>();
@@ -186,10 +104,6 @@ namespace Unity.FPS.AI
             // Handle logic 
             switch (AiState)
             {
-                case AIState.Cohesion:
-                    Vector3 steeringForce = CohesionUpdate();
-                    m_EnemyController.SetNavDestination(steeringForce);
-                    break;
                 case AIState.Patrol:
                     m_EnemyController.UpdatePathDestination();
                     m_EnemyController.SetNavDestination(m_EnemyController.GetDestinationOnPath());
