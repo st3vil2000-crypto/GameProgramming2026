@@ -15,32 +15,44 @@ namespace AH2736
         //  Sum of forces are vectored to adjust movement direction (like object avoidance)
 
         // + Cohesion Behaviour Variables
-        [Header("Cohesion")]
-        [SerializeField] public float m_scanRadius = 5f; // sphere of influence
-        [SerializeField] public LayerMask m_scanLayer; // GameObject layer for influence (targets of scan)
-        [SerializeField] public int m_cohesionCharge = 0; // Units that determine force strength - interacts with other charges in sphere of influence
-        [SerializeField] public bool m_positive = true; // 'positive' or 'negative' charge (opposites attract, like repels)
-        [SerializeField] public float m_forceWeight = 2f; // weight of cohesion force when setting GameObject destination
+        [Header("Scanning")]
+        [SerializeField, Range(0f,100f)] private float m_scanRadius = 5f; // sphere of influence
+        [SerializeField] private LayerMask m_scanLayer; // GameObject layer for influence (targets of scan)
+        [Header("Cohesion Properties")]
+        [SerializeField, Range(0,100)] private int m_cohesionCharge = 0; // Units that determine force strength - interacts with other charges in sphere of influence
+        [SerializeField] private bool m_positive = true; // 'positive' or 'negative' charge (opposites attract, like repels)
+        [Header("Strength of Cohesion Force")]
+        [SerializeField, Range(0f,10f)] private float m_forceWeight = 2f; // weight of cohesion force when setting GameObject destination
+        [SerializeField, Range(0f, 100f)] private float m_forceMax = 10f; // maximum force magnitude
 
-        public NavMeshAgent m_agent; // reference to NavMeshAgent
-        public Collider[] m_scanResults = new Collider[10]; // GameObjects exerting influence
+        // + Protected Internal Variables
+        private NavMeshAgent m_agent; // reference to NavMeshAgent
+        private Collider[] m_scanResults = new Collider[10]; // GameObjects exerting influence
+
+        // + Public ReadOnly Variables
+        public NavMeshAgent Agent => m_agent; // Reference to NavMeshAgent to control movement in game
+        public Collider[] ScanResults => m_scanResults; // List of Neighbours in ScanRadius
+        public int CohesionCharge => m_cohesionCharge;
+        public bool CohesionPositive => m_positive;
+        
 
         //hack DEBUG VARIABLES
-        [SerializeField] public float m_debugLastForceMag;
-        [SerializeField] public Vector3 m_debugLastTotalForce;
+        [Header("Debug Variables")]
+        public float m_debugLastForceMag;
+        public Vector3 m_debugLastTotalForce;
 
 
-        //  Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        private void Awake()
         {
-            m_agent = GetComponent<NavMeshAgent>(); // Define reference to NavMeshAgent to control movement in game
+            m_agent = GetComponent<NavMeshAgent>();
+
+            // Initial Configuration with NavMesh
             m_agent.updatePosition = true; // keep GameObject on mesh
             m_agent.updateRotation = true; // allow GameObject to turn
-            m_agent.acceleration = 100f; // responsiveness to velocity adjustments
         }
 
         //  Update is called once per frame, after EnemyMobile and EnemyController (to allow native pathsetting)
-        void LateUpdate()
+        private void LateUpdate()
         {
             // Safety: Ensure script is running on appropriate game object
             // Return void if the GameObject has no NavMeshAgent or is not on the NavMesh
@@ -60,12 +72,11 @@ namespace AH2736
             // + 3. Calculate cohesion force from interactions with neighbours
             //  clamp magnitude of force to prevent extreme numbers at close range (asymptotic function)
             Vector3 cohesionForce = CalculateCohesionForce(nearbyNeighbours);
-            cohesionForce = Vector3.ClampMagnitude(cohesionForce, 10.0f);
+            cohesionForce = Vector3.ClampMagnitude(cohesionForce, m_forceMax);
 
             // + 4. Move GameObject according to force
             //  weighted by m_forceWeight
             m_agent.Move(cohesionForce * m_forceWeight * Time.deltaTime);
-
         }
 
         // ++ Main Method
@@ -75,7 +86,7 @@ namespace AH2736
             // within the scan radius
         // Return: 
             // totalForce: Sum of individual force vectors within scan range
-        public Vector3 CalculateCohesionForce(int count)
+        private Vector3 CalculateCohesionForce(int count)
         {
             // Define totalForce vector, defaulting to zero
             Vector3 totalForce = Vector3.zero;
@@ -97,8 +108,8 @@ namespace AH2736
                 if (stats != null)
                 {
                     // + Define neighbour variables
-                    float neighbourCharge = stats.m_cohesionCharge;
-                    bool neighbourPositive = stats.m_positive; 
+                    float neighbourCharge = stats.CohesionCharge;
+                    bool neighbourPositive = stats.CohesionPositive; 
                     Vector3 neighbourPosition = neighbour.transform.position; 
                     float neighbourDistance = Vector3.Distance(transform.position, neighbourPosition);
 
