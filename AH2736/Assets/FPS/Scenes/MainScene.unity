@@ -168,8 +168,59 @@ PrefabInstance:
       objectReference: {fileID: 1721412250}
     - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
         type: 3}
+      propertyPath: m_holdAreaAlarm
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
       propertyPath: m_holdTimeRequired
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_holdAreaAlarmDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_onAlarmTrigger.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_onAlarmTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_onAlarmTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 11500000, guid: 8a49e28edb2e6dd42ac4e0b9b70d36be,
+        type: 3}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_onAlarmTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_onAlarmTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: set_name
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_onAlarmTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEditor.MonoScript, UnityEditor.CoreModule
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_onAlarmTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: TriggerAlarm
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617694221554424426, guid: fbbfa92426b7f0548b386a277e555e69,
+        type: 3}
+      propertyPath: m_onAlarmTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 2707800222142829387, guid: fbbfa92426b7f0548b386a277e555e69,
         type: 3}
@@ -2235,6 +2286,24 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2729281214105776702}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1898633077 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1315839542190839943, guid: c996b53e9f849234393d1e90f68d1679,
+    type: 3}
+  m_PrefabInstance: {fileID: 4008933581619590512}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1898633081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1898633077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a49e28edb2e6dd42ac4e0b9b70d36be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: fps.AI::AlarmManager
 --- !u!1001 &1927342974
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4368,6 +4437,11 @@ PrefabInstance:
     - target: {fileID: 7253983127304857660, guid: 761cdc9e4e883334cbdcea062d0befa7,
         type: 3}
       propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 7253983127304857660, guid: 761cdc9e4e883334cbdcea062d0befa7,
+        type: 3}
+      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 7267769575523271762, guid: 761cdc9e4e883334cbdcea062d0befa7,
@@ -6629,7 +6703,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1315839542190839943, guid: c996b53e9f849234393d1e90f68d1679,
+        type: 3}
+      insertIndex: 6
+      addedObject: {fileID: 1898633081}
   m_SourcePrefab: {fileID: 100100000, guid: c996b53e9f849234393d1e90f68d1679, type: 3}
 --- !u!1001 &9217268748774167426
 PrefabInstance:

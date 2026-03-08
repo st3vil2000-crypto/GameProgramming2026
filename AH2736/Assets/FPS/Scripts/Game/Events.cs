@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Unity.FPS.Game
 {
@@ -16,6 +17,7 @@ namespace Unity.FPS.Game
         public static AmmoPickupEvent AmmoPickupEvent = new AmmoPickupEvent();
         public static DamageEvent DamageEvent = new DamageEvent();
         public static DisplayMessageEvent DisplayMessageEvent = new DisplayMessageEvent();
+        public static AreaAlarmEvent AreaAlarmEvent = new AreaAlarmEvent();
     }
 
     public class ObjectiveUpdateEvent : GameEvent
@@ -63,4 +65,22 @@ namespace Unity.FPS.Game
         public string Message;
         public float DelayBeforeDisplay;
     }
+
+    // +++ Alarm Event
+    // Structs
+    // Alarm info
+    public struct AlarmInfo
+    {
+        public Vector3 origin;
+        public float range;
+    }
+
+    // custom class for alarm events, allowing position and distance variables to be passed
+    [System.Serializable]
+    public class AreaAlarmEvent : GameEvent 
+    {
+        public AlarmInfo info;
+    }
+
+
 }

@@ -36,7 +36,8 @@ namespace Unity.FPS.AI
         const string k_AnimAttackParameter = "Attack";
         const string k_AnimAlertedParameter = "Alerted";
         const string k_AnimOnDamagedParameter = "OnDamaged";
-
+      
+        
         void Start()
         {
             m_EnemyController = GetComponent<EnemyController>();
@@ -109,9 +110,12 @@ namespace Unity.FPS.AI
                     m_EnemyController.SetNavDestination(m_EnemyController.GetDestinationOnPath());
                     break;
                 case AIState.Follow:
+                    if (m_EnemyController.KnownDetectedTarget != null)
+                    {
                     m_EnemyController.SetNavDestination(m_EnemyController.KnownDetectedTarget.transform.position);
                     m_EnemyController.OrientTowards(m_EnemyController.KnownDetectedTarget.transform.position);
                     m_EnemyController.OrientWeaponsTowards(m_EnemyController.KnownDetectedTarget.transform.position);
+                    }
                     break;
                 case AIState.Attack:
                     if (Vector3.Distance(m_EnemyController.KnownDetectedTarget.transform.position,
@@ -181,5 +185,26 @@ namespace Unity.FPS.AI
 
             Animator.SetTrigger(k_AnimOnDamagedParameter);
         }
+
+
+        // function for handling behaviour when an alarm is triggered
+        public void OnAlarmTriggered()
+        {
+            // Find the player
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+            if (player != null)
+            {
+                // Inject the target into the detection module
+                m_EnemyController.DetectionModule.ForceDetection(player);
+
+                // Change AI State to follow
+                AiState = AIState.Follow;
+
+                // send debug message
+                Debug.Log($"{gameObject.name} alerted by alarm!");
+            }
+        }
+
     }
 }

@@ -342,11 +342,29 @@ MonoBehaviour:
   Description: 
   IsOptional: 1
   DelayVisible: 0
+  m_onAlarmTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11500000, guid: 8a49e28edb2e6dd42ac4e0b9b70d36be, type: 3}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_destroyRoot: {fileID: 2707800222142829391}
   m_holdTimeImage: {fileID: 3878320190639338267}
   m_holdTimeBarPivot: {fileID: 5656751949676699349}
   m_hideHoldTimeBar: 1
   m_holdTimeRequired: 10
+  m_holdTimeReset: 0
+  m_holdAreaAlarm: 0
+  m_holdAreaAlarmDistance: 20
 --- !u!114 &2707800222142829378
 MonoBehaviour:
   m_ObjectHideFlags: 0
