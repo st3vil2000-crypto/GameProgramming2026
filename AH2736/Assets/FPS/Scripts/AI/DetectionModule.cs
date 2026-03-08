@@ -137,5 +137,19 @@ namespace Unity.FPS.AI
                 Animator.SetTrigger(k_AnimAttackParameter);
             }
         }
+
+        // Public bridge method for injecting the player's position into the detection system
+        public void ForceDetection(GameObject target)
+        {
+            // return void if there's no target
+            if (target == null) return;
+
+            // set the target to known
+            KnownDetectedTarget = target;
+
+            // trigger detection events
+            onDetectedTarget?.Invoke();
+        }
+
     }
 }

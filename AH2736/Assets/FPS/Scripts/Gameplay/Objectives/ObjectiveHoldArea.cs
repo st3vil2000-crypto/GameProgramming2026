@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.FPS.Game;
 using Unity.FPS.Gameplay;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace AH2736
 {
@@ -12,10 +13,14 @@ namespace AH2736
 
     public class ObjectiveHoldArea : Objective
     {
-       // Variables
+        // Events
+        public AreaAlarmEvent m_onAlarmTrigger;
+        
+        // Variables
         [Tooltip("Visible transform that will be destroyed once the objective is completed")]
         public Transform m_destroyRoot;
 
+        [Header("Time Bar")]
         [Tooltip("Image component displaying time remaining")]
         public Image m_holdTimeImage;
 
@@ -25,13 +30,22 @@ namespace AH2736
         [Tooltip("Whether the bar is visible at full time")]
         public bool m_hideHoldTimeBar = true;
 
+        [Header("Hold Time")]
         [Tooltip("Time needed to hold")]
         [SerializeField] private float m_holdTimeRequired = 10f;
+        
+        [Tooltip("Whether the timer resets upon leaving and returning to the area")]
+        [SerializeField] private bool m_holdTimeReset = false;
+
         private float m_elapsedTime;
         private bool m_hasStarted = false;
 
-        [Tooltip("Whether the timer resets upon leaving and returning to the area")]
-        [SerializeField] private bool m_holdTimeReset = false;
+        [Header("Alarms")]
+        [Tooltip("Whether entering the objective area alerts nearby enemies")]
+        [SerializeField] private bool m_holdAreaAlarm = false;
+
+        [Tooltip("Distance for alarming nearby enemies")]
+        [SerializeField, Range(0, 100)] public float m_holdAreaAlarmDistance = 20f;
 
         
 
@@ -53,11 +67,25 @@ namespace AH2736
             // test if the other collider contains a PlayerCharacterController, then complete
             if (player != null)
             {
+                // Start counter if it hasn't started already
+                // Set state that the timer has started if it's the first time
                 if (!m_hasStarted)
                 {
                     // Start counter
                     m_elapsedTime = 0f;
                     m_hasStarted = true;
+                }
+
+                // Set alarm trigger, passing position of the objective and distance of alarm
+                if (m_holdAreaAlarm && other.CompareTag("Player"))
+                {
+                    AreaAlarmEvent alarm = new AreaAlarmEvent();
+                    alarm.info.origin = transform.position;
+                    alarm.info.range = m_holdAreaAlarmDistance;
+                    
+                    EventManager.Broadcast(alarm);
+
+                    Debug.Log("Alarm Registered by Objective Marker");
                 }
                 
                 // Log event
