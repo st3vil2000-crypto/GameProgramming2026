@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEditor;
+using Unity.FPS.Game;
 
 namespace AH2736
 {
@@ -18,9 +19,12 @@ namespace AH2736
         [Header("Scanning")]
         [SerializeField, Range(0f,100f)] private float m_scanRadius = 5f; // sphere of influence
         [SerializeField] private LayerMask m_scanLayer; // GameObject layer for influence (targets of scan)
-        [Header("Cohesion Properties")]
-        [SerializeField, Range(0,100)] private int m_cohesionCharge = 0; // Units that determine force strength - interacts with other charges in sphere of influence
-        [SerializeField] private bool m_positive = true; // 'positive' or 'negative' charge (opposites attract, like repels)
+        
+        //hack moving variables to ChargeMarker.cs
+        //[Header("Cohesion Properties")]
+        //[SerializeField, Range(0,100)] private int m_cohesionCharge = 0; // Units that determine force strength - interacts with other charges in sphere of influence
+        //[SerializeField] private bool m_positive = true; // 'positive' or 'negative' charge (opposites attract, like repels)
+        
         [Header("Strength of Cohesion Force")]
         [SerializeField, Range(0f,10f)] private float m_forceWeight = 2f; // weight of cohesion force when setting GameObject destination
         [SerializeField, Range(0f, 100f)] private float m_forceMax = 10f; // maximum force magnitude
@@ -28,12 +32,15 @@ namespace AH2736
         // + Protected Internal Variables
         private NavMeshAgent m_agent; // reference to NavMeshAgent
         private Collider[] m_scanResults = new Collider[10]; // GameObjects exerting influence
+        private ChargeMarker m_myChargeMarker;
 
         // + Public ReadOnly Variables
         public NavMeshAgent Agent => m_agent; // Reference to NavMeshAgent to control movement in game
         public Collider[] ScanResults => m_scanResults; // List of Neighbours in ScanRadius
-        public int CohesionCharge => m_cohesionCharge;
-        public bool CohesionPositive => m_positive;
+        
+        //hack moving variables to ChargeMarker.cs
+        //public int CohesionCharge => m_cohesionCharge;
+        //public bool CohesionPositive => m_positive;
         
 
         //hack DEBUG VARIABLES
@@ -44,11 +51,18 @@ namespace AH2736
 
         private void Awake()
         {
-            m_agent = GetComponent<NavMeshAgent>();
-
             // Initial Configuration with NavMesh
+            m_agent = GetComponent<NavMeshAgent>();
             m_agent.updatePosition = true; // keep GameObject on mesh
             m_agent.updateRotation = true; // allow GameObject to turn
+
+            m_myChargeMarker = GetComponentInChildren<AH2736.ChargeMarker>();
+
+            if (m_myChargeMarker != null )
+            {
+                Debug.LogError($"ChargeMarker missing on {gameObject.name}");
+            }
+
         }
 
         //  Update is called once per frame, after EnemyMobile and EnemyController (to allow native pathsetting)
@@ -98,15 +112,17 @@ namespace AH2736
                 GameObject neighbour = m_scanResults[i].gameObject;
 
                 // Ignore self - don't bother with the rest of the update.
-                if (neighbour == this.gameObject) continue;
+                if (neighbour.transform.IsChildOf(this.transform)) continue;
                 // otherwise...
 
                 // + Define reference to neighbour cohesion variables
-                Cohesion stats = neighbour.GetComponentInParent<AH2736.Cohesion>();
-                
+                //hack update
+                //Cohesion stats = neighbour.GetComponentInParent<AH2736.Cohesion>();
+                ChargeMarker stats = neighbour.GetComponent<AH2736.ChargeMarker>();
+
                 // If such information exists...
                 if (stats != null)
-                {
+                {   
                     // + Define neighbour variables
                     float neighbourCharge = stats.CohesionCharge;
                     bool neighbourPositive = stats.CohesionPositive; 
@@ -114,13 +130,13 @@ namespace AH2736
                     float neighbourDistance = Vector3.Distance(transform.position, neighbourPosition);
 
                     // + Calculate strength of force from neighbour
-                    float forceMagnitude = (m_cohesionCharge * neighbourCharge) / (neighbourDistance * neighbourDistance);
+                    float forceMagnitude = (m_myChargeMarker.CohesionCharge * neighbourCharge) / (neighbourDistance * neighbourDistance);
 
                     // + Vector additions: Update totalForce vector with influence of neighbour
 
                     // If the neighbour has the same charge sign as self
                     // the force is repulsive
-                    if (neighbourPositive == m_positive) 
+                    if (neighbourPositive == m_myChargeMarker.CohesionPositive) 
                     {
                         Vector3 forceDirection = (transform.position - neighbourPosition).normalized;
                         totalForce += forceDirection * forceMagnitude;
@@ -128,7 +144,7 @@ namespace AH2736
 
                     // If the neighbour has opposite charge sign as self
                     // the force is attractive
-                    if (neighbourPositive != m_positive) 
+                    if (neighbourPositive != m_myChargeMarker.CohesionPositive) 
                     {
                         Vector3 forceDirection = (neighbourPosition - transform.position).normalized;
                         totalForce += forceDirection * forceMagnitude;
@@ -145,7 +161,7 @@ namespace AH2736
 
 
         //hack DEBUG STUFF
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             // 1. Draw Scan Radius and Force Vector
             Gizmos.color = Color.rebeccaPurple;
@@ -154,7 +170,8 @@ namespace AH2736
             Gizmos.DrawRay(transform.position, m_debugLastTotalForce * 2f);
 
             // 2. Draw a label with variables
-            string debugInfo = $"Charge: {m_cohesionCharge}\nPositive: {m_positive}\nForceExperienced: {m_debugLastForceMag}";
+            if (m_myChargeMarker == null) return;
+            string debugInfo = $"Charge: {m_myChargeMarker.CohesionCharge}\nPositive: {m_myChargeMarker.CohesionPositive}\nForceExperienced: {m_debugLastForceMag}";
             UnityEditor.Handles.Label(transform.position + Vector3.up * 2, debugInfo);
         }
     }

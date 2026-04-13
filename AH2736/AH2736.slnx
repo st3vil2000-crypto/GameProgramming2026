@@ -2,9 +2,9 @@
   <Project Path="fps.UI.csproj" />
   <Project Path="fps.Game.csproj" />
   <Project Path="Unity.Microgame.Tutorials.csproj" />
+  <Project Path="fps.Gameplay.csproj" />
   <Project Path="NavMeshComponents.csproj" />
   <Project Path="fps.AI.csproj" />
-  <Project Path="fps.Gameplay.csproj" />
   <Project Path="Unity.FPS.Tutorials.csproj" />
   <Project Path="NavMeshComponentsEditor.csproj" />
   <Project Path="fps.Editor.csproj" />
