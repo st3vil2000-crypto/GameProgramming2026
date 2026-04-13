@@ -26,8 +26,9 @@ namespace AH2736
         //[SerializeField] private bool m_positive = true; // 'positive' or 'negative' charge (opposites attract, like repels)
         
         [Header("Strength of Cohesion Force")]
-        [SerializeField, Range(0f,10f)] private float m_forceWeight = 2f; // weight of cohesion force when setting GameObject destination
+        [SerializeField, Range(0f,100f)] private float m_forceWeight = 2f; // weight of cohesion force when setting GameObject destination
         [SerializeField, Range(0f, 100f)] private float m_forceMax = 10f; // maximum force magnitude
+        [SerializeField, Range(0f, 10f)] private float m_minDistance = 1f; // minimum allowable distance to attractive object
 
         // + Protected Internal Variables
         private NavMeshAgent m_agent; // reference to NavMeshAgent
@@ -58,10 +59,10 @@ namespace AH2736
 
             m_myChargeMarker = GetComponentInChildren<AH2736.ChargeMarker>();
 
-            if (m_myChargeMarker != null )
+            if (m_myChargeMarker == null )
             {
-                Debug.LogError($"ChargeMarker missing on {gameObject.name}");
-            }
+                Debug.LogError($"ChargeMarker missing on: {gameObject.name}");
+            } 
 
         }
 
@@ -111,13 +112,12 @@ namespace AH2736
                 // + Define reference to neighbour 
                 GameObject neighbour = m_scanResults[i].gameObject;
 
+                // + Safety
                 // Ignore self - don't bother with the rest of the update.
                 if (neighbour.transform.IsChildOf(this.transform)) continue;
                 // otherwise...
 
                 // + Define reference to neighbour cohesion variables
-                //hack update
-                //Cohesion stats = neighbour.GetComponentInParent<AH2736.Cohesion>();
                 ChargeMarker stats = neighbour.GetComponent<AH2736.ChargeMarker>();
 
                 // If such information exists...
@@ -132,10 +132,14 @@ namespace AH2736
                     // + Calculate strength of force from neighbour
                     float forceMagnitude = (m_myChargeMarker.CohesionCharge * neighbourCharge) / (neighbourDistance * neighbourDistance);
 
+                    // + Safety
+                    // Ignore forces from neighbours within minimum distance to avoid singularities
+                    if (neighbourDistance < m_minDistance) forceMagnitude = 0;
+
                     // + Vector additions: Update totalForce vector with influence of neighbour
 
-                    // If the neighbour has the same charge sign as self
-                    // the force is repulsive
+                        // If the neighbour has the same charge sign as self
+                        // the force is repulsive
                     if (neighbourPositive == m_myChargeMarker.CohesionPositive) 
                     {
                         Vector3 forceDirection = (transform.position - neighbourPosition).normalized;
@@ -155,6 +159,8 @@ namespace AH2736
                     m_debugLastTotalForce = totalForce;
                 }
             }
+
+
 
             return totalForce;
         }

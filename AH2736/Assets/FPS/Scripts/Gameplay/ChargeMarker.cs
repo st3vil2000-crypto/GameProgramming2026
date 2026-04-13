@@ -20,7 +20,16 @@ namespace AH2736
         public ParticleSystem m_chargeParticles;
 
         // + Public Read-Only Variables
-        public int CohesionCharge => m_cohesionCharge;
+        public int CohesionCharge
+        {
+            get => m_cohesionCharge;
+            set
+            {
+                m_cohesionCharge = value;
+                UpdateVisuals();
+            }
+        }
+        
         public bool CohesionPositive
         {
             // Allows visuals to be updated if sign changes

@@ -20,6 +20,10 @@ namespace AH2736
             ChargeMarker = GetComponent<ChargeMarker>();
             if (!ChargeMarker)
             {
+                ChargeMarker = GetComponentInParent<ChargeMarker>();
+            }
+            if (!ChargeMarker)
+            {
                 ChargeMarker = GetComponentInChildren<ChargeMarker>();
             }
         }
@@ -29,19 +33,22 @@ namespace AH2736
             // If ChargeMarker already exists, modify it
             if (ChargeMarker)
             {
-                // take original values
+                // take original values and combine to put on the number line
                 var totalCharge = ChargeMarker.CohesionCharge;
                 var chargePositive = ChargeMarker.CohesionPositive;
-            
-                // combine charge and sign for numerical calculations
-                if (chargePositive == true) charge = charge * 1;
-                if (chargePositive == false) charge = charge * -1;
 
-                // add charge value to total charge, adding for positive, subtracting for negative
+                if (chargePositive == true) totalCharge = totalCharge * 1;
+                if (chargePositive == false) totalCharge = totalCharge * -1;
+
+                // combine charge and sign of infliction to put on the number line
+                if (positive == true) charge = charge * 1;
+                if (positive == false) charge = charge * -1;
+
+                // perform numerical calculations
                 totalCharge += charge * ChargeMultiplier;
 
                 // Set positive or negative state based on numerical charge value
-                if (totalCharge < 0) chargePositive = false;
+                if (totalCharge <= 0) chargePositive = false;
                 if (totalCharge > 0) chargePositive = true;
 
                 // convert charge value back to absolute magnitude
