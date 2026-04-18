@@ -73,10 +73,7 @@ namespace AH2736
             // Return void if the GameObject has no NavMeshAgent or is not on the NavMesh
             if (m_agent == null || !m_agent.isOnNavMesh) return;
 
-            // + 1. Get GameObject's destination point (natively set by EnemyMobile)
-            Vector3 setDestination = m_agent.destination;
-
-            // + 2. Scan for nearby influencers
+            // + 1. Scan for nearby influencers
             int nearbyNeighbours = Physics.OverlapSphereNonAlloc(
                 transform.position,
                 m_scanRadius,
@@ -84,12 +81,12 @@ namespace AH2736
                 m_scanLayer
                 );
 
-            // + 3. Calculate cohesion force from interactions with neighbours
+            // + 2. Calculate cohesion force from interactions with neighbours
             //  clamp magnitude of force to prevent extreme numbers at close range (asymptotic function)
             Vector3 cohesionForce = CalculateCohesionForce(nearbyNeighbours);
             cohesionForce = Vector3.ClampMagnitude(cohesionForce, m_forceMax);
 
-            // + 4. Move GameObject according to force
+            // + 3. Move GameObject according to force
             //  weighted by m_forceWeight
             m_agent.Move(cohesionForce * m_forceWeight * Time.deltaTime);
         }
