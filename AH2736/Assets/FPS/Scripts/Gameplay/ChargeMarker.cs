@@ -4,23 +4,19 @@ namespace AH2736
 {
 
 
-    public class ChargeMarker : MonoBehaviour
+    public class ChargeMarker : ChargeBase
     {
-        // + Charge Variables
-        [Header("Cohesion Properties")]
-        [SerializeField, Range(0, 100)] private int m_cohesionCharge = 1; // Charge Magnitude: determines force strength 
-        [SerializeField] private bool m_positive = true; // 'positive' or 'negative' charge (opposites attract, like repels)
-
-        //todo decay effect
-        //todo change charge sign to enum instead of boolean?
-
+        // + Inherits from ChargeBase
+        // + Adds effects to visualise charge variables
+        
+        
         // + Effect Variables
         [Header("Visuals")]
         public Light m_chargeLight;
         public ParticleSystem m_chargeParticles;
 
         // + Public Read-Only Variables
-        public int CohesionCharge
+        public override int CohesionCharge
         {
             get => m_cohesionCharge;
             set
@@ -30,7 +26,7 @@ namespace AH2736
             }
         }
         
-        public bool CohesionPositive
+        public override bool CohesionPositive
         {
             // Allows visuals to be updated if sign changes
             get => m_positive;
@@ -46,12 +42,6 @@ namespace AH2736
         void Start()
         {
             UpdateVisuals();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
         }
 
         public void UpdateVisuals()
@@ -73,7 +63,7 @@ namespace AH2736
             }
         }
 
-        public void TakeCharge(int charge, bool positive, GameObject chargeSource)
+        public override void TakeCharge(int charge, bool positive, GameObject chargeSource)
         {
             m_cohesionCharge = charge;
             m_positive = positive;
