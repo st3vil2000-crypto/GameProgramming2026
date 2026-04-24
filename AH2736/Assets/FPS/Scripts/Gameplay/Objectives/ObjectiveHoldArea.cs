@@ -6,20 +6,24 @@ using UnityEngine.Events;
 
 namespace AH2736
 {
-   // Used ObjectiveReachPoint script as basis for the new objective 
+   // + Used ObjectiveReachPoint script as basis for the new objective 
+   // + Also copied how the Health Bar was being implemented
+   // + to visualize the time remaining to complete objective.
     
     // Script requires a collider to work
     [RequireComponent(typeof(Collider))]
 
     public class ObjectiveHoldArea : Objective
     {
-        // Events
+        //++ Events
         public AreaAlarmEvent m_onAlarmTrigger;
         
-        // Variables
+        //++ Variables
+       // + Objective Marker to remove when the objective is completed 
         [Tooltip("Visible transform that will be destroyed once the objective is completed")]
         public Transform m_destroyRoot;
 
+        // + Variables relating to timer bar object
         [Header("Time Bar")]
         [Tooltip("Image component displaying time remaining")]
         public Image m_holdTimeImage;
@@ -30,25 +34,31 @@ namespace AH2736
         [Tooltip("Whether the bar is visible at full time")]
         public bool m_hideHoldTimeBar = true;
 
+        // + Objective Variables
+        // Time needed to hold the area
         [Header("Hold Time")]
         [Tooltip("Time needed to hold")]
         [SerializeField] private float m_holdTimeRequired = 10f;
         
+        // Optional: does the timer reset if the player leaves the area?
         [Tooltip("Whether the timer resets upon leaving and returning to the area")]
         [SerializeField] private bool m_holdTimeReset = false;
 
-        private float m_elapsedTime;
-        private bool m_hasStarted = false;
-
+        // + Alarm Variables
         [Header("Alarms")]
+       // Optional: entering area sets an alarm 
         [Tooltip("Whether entering the objective area alerts nearby enemies")]
         [SerializeField] private bool m_holdAreaAlarm = false;
 
+        // Range for alarm (all enemies in this radius alerted to player location)
         [Tooltip("Distance for alarming nearby enemies")]
         [SerializeField, Range(0, 100)] public float m_holdAreaAlarmDistance = 20f;
 
-        
+        // + Internal Time Variables
+        private float m_elapsedTime; // how long has elapsed on the clock
+        private bool m_hasStarted = false; // whether the timer has started
 
+     
         void Awake()
         {
             // If there is no marker, get one
@@ -64,10 +74,11 @@ namespace AH2736
 
             // Initialize player variable from the PlayerCharacterController
             var player = other.GetComponent<PlayerCharacterController>();
-            // test if the other collider contains a PlayerCharacterController, then complete
+            
+            // + if the entering object is the player...
             if (player != null)
             {
-                // Start counter if it hasn't started already
+                // + Start counter if it hasn't started already
                 // Set state that the timer has started if it's the first time
                 if (!m_hasStarted)
                 {
@@ -76,7 +87,8 @@ namespace AH2736
                     m_hasStarted = true;
                 }
 
-                // Set alarm trigger, passing position of the objective and distance of alarm
+                // + Set alarm trigger
+                // pass position of the objective and radius of alarm
                 if (m_holdAreaAlarm && other.CompareTag("Player"))
                 {
                     AreaAlarmEvent alarm = new AreaAlarmEvent();
@@ -93,21 +105,23 @@ namespace AH2736
             }
         }
 
+
+        // 
         private void OnTriggerStay(Collider other)
         {
-            // Count up as long as player remains in trigger
+            // + Count up as long as player remains in trigger
             m_elapsedTime += Time.deltaTime;
 
-            // When the counter is full
+            // + When the counter is full
             if (m_elapsedTime >= m_holdTimeRequired)
             {
                 // Notify for debug
                 Debug.Log("Hold Timer done");
                 
-                // Complete objective
+                // + Complete objective
                 CompleteObjective(string.Empty, string.Empty, "Objective complete : " + Title);
 
-                // Destroy the transform and remove compass marker
+                // + Destroy the transform and remove compass marker
                 Destroy(m_destroyRoot.gameObject);    
             }
         }
@@ -131,6 +145,7 @@ namespace AH2736
 
         void Update()
         {
+            // + Each frame, update the timer bar to visualize progress
             // Update hold time value
             m_holdTimeImage.fillAmount = (m_holdTimeRequired - m_elapsedTime) / m_holdTimeRequired;
 

@@ -3,48 +3,31 @@ using UnityEngine;
 namespace AH2736
 {
 
-
+    // ++ Basic Charge Marker
+    //  Inherits from ChargeBase
+    //  Adds light-based effects to visualise charge variables
     public class ChargeMarker : ChargeBase
     {
-        // + Inherits from ChargeBase
-        // + Adds effects to visualise charge variables
-        
-        
-        // + Effect Variables
+        // +++ Effect Variables
         [Header("Visuals")]
-        public Light m_chargeLight;
-        public ParticleSystem m_chargeParticles;
+        public Light m_chargeLight; // Reference to a light component (contained in prefab)
+        public ParticleSystem m_chargeParticles; // Reference to particle component (in prefab)
 
-        // + Public Read-Only Variables
-        public override int CohesionCharge
-        {
-            get => m_cohesionCharge;
-            set
-            {
-                m_cohesionCharge = value;
-                UpdateVisuals();
-            }
-        }
-        
-        public override bool CohesionPositive
-        {
-            // Allows visuals to be updated if sign changes
-            get => m_positive;
-            set
-            {
-                m_positive = value;
-                UpdateVisuals();
-            }
-        }
-
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
+        // ++ Set visuals at start
         void Start()
         {
             UpdateVisuals();
         }
 
-        public void UpdateVisuals()
+        // ++ Inject call to Effects Method through the virtual override
+        // + "When there is a change in charge, change the visual effects"
+        protected override void OnChargeChanged()
+        {
+            UpdateVisuals();
+        }
+
+        // ++ Set visual effect variables to reflect charge values
+        private void UpdateVisuals()
         {
             // Visualise charge properties: red = positive, blue = negative, intensity = charge magnitude
         
@@ -61,14 +44,6 @@ namespace AH2736
                 var main = m_chargeParticles.main;
                 main.startColor = effectColour;
             }
-        }
-
-        public override void TakeCharge(int charge, bool positive, GameObject chargeSource)
-        {
-            m_cohesionCharge = charge;
-            m_positive = positive;
-
-            UpdateVisuals();
         }
 
     }

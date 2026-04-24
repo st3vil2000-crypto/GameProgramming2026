@@ -6,8 +6,16 @@ using NUnit;
 
 namespace AH2736
 {
+    // ++ Caller for Alarm System
+    // + Attached as component to scene's GameManager
+    // + Instructs what to do when an Alarm Event is broadcast
+    // Call an OnAlarmTriggered() method
+    // for all enemies within a radius of the source
+    
     public class AlarmManager : MonoBehaviour
     {
+        
+        // + Make a list of all enemies in the scene
         private EnemyMobile[] allEnemies;
 
         void OnEnable()
@@ -18,21 +26,30 @@ namespace AH2736
 
         void OnDisable()
         {
+            // Don't listen for alarm events
             EventManager.RemoveListener<AreaAlarmEvent>(OnAlarmRaised);
         }
 
-        void OnAlarmRaised(AreaAlarmEvent alarm)
-        {
-            TriggerAlarm(alarm.info.origin, alarm.info.range);
-        }
-        
         void Start()
         {
             // Find all mobile enemies in the scene and hold the list
             allEnemies = FindObjectsByType<EnemyMobile>(FindObjectsSortMode.None);
         }
 
-        // Method called when alarm is triggered
+
+        // ++ Trigger for the Alarm
+        // Happens somewhere out in the scene. 
+        // Called by a hold area objective, security camera, story point etc...
+        void OnAlarmRaised(AreaAlarmEvent alarm)
+        {
+            // If an alarm is raised (i.e. by Hold Area Objective)
+            // then trigger the alarm at the appropriate origin
+            TriggerAlarm(alarm.info.origin, alarm.info.range);
+        }
+        
+        // ++ Method called when alarm is triggered
+        // Determine which enemies are within the specified range of the alarm
+        // Tell those enemies to respond.
         public void TriggerAlarm(Vector3 origin, float range)
         {
             foreach (EnemyMobile enemy in allEnemies)

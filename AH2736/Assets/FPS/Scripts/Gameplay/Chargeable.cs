@@ -4,33 +4,46 @@ using UnityEngine.EventSystems;
 
 namespace AH2736
 {
+
+    // +++ Charge Interface
+    // + Contract for (potential) charge carriers
     public class Chargeable : MonoBehaviour
     {
+        // ++ Chargability Variable
         [Tooltip("Multiplier to apply to the received charge")]
-        public int ChargeMultiplier = 1;
+        public int ChargeMultiplier = 1; 
+        // Defines how chargeable the object is compared to default. Allows variation in materials. E.g. Conductors vs Insulators.
 
+        // ++ ChargeMarker object to use
+        // + Charge is held by independent ChargeMarkers.
+        // The concrete object to use as a 'charge-carrier' must be defined for each chargable object.
         [Tooltip("The charge prefab to spawn if not native")]
-        [SerializeField] private GameObject chargeMarkerPrefab;
+        [SerializeField] private GameObject chargeMarkerPrefab; 
 
-        public ChargeMarker ChargeMarker { get; private set; }
+        // ++ Public Read-Only Property for the ChargeMarker
+        // Allows other objects to read the chargeable object's charge, but not to change it.
+        public ChargeBase ChargeMarker { get; private set; }
 
+        // + Attach the ChargeMarker at Initialization (if one exists)
         void Awake()
         {
             // Find the charge component
-            ChargeMarker = GetComponent<ChargeMarker>();
+            ChargeMarker = GetComponent<ChargeBase>();
             if (!ChargeMarker)
             {
-                ChargeMarker = GetComponentInParent<ChargeMarker>();
+                ChargeMarker = GetComponentInParent<ChargeBase>();
             }
             if (!ChargeMarker)
             {
-                ChargeMarker = GetComponentInChildren<ChargeMarker>();
+                ChargeMarker = GetComponentInChildren<ChargeBase>();
             }
         }
 
+        // ++ Key Method: How to handle the imposition of charge between objects
         public void InflictCharge(int charge, bool positive, GameObject chargeSource)
         {
-            // If ChargeMarker already exists, modify it
+            //+ If ChargeMarker already exists, modify it
+            //todo Method is a bit clunky because of how charge is represented. A holdover from initial implementation.
             if (ChargeMarker)
             {
                 // take original values and combine to put on the number line
@@ -67,7 +80,7 @@ namespace AH2736
                 chargeMarkerInstance.transform.SetParent(this.transform);
 
                 // Update ChargeMarker with the new instance
-                ChargeMarker = chargeMarkerInstance.GetComponent<AH2736.ChargeMarker>();
+                ChargeMarker = chargeMarkerInstance.GetComponent<AH2736.ChargeBase>();
 
                 // Apply the received charge
                 ChargeMarker.TakeCharge(charge, positive, chargeSource);

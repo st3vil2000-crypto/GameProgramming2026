@@ -138,16 +138,17 @@ namespace Unity.FPS.AI
             }
         }
 
-        // Public bridge method for injecting the player's position into the detection system
+        // ++ Public bridge method
+        // + injects the player's position into the detection system
         public void ForceDetection(GameObject target)
         {
             // return void if there's no target
             if (target == null) return;
 
-            // set the target to known
+            // set the target to given location
             KnownDetectedTarget = target;
 
-            // trigger detection events
+            // trigger any detection events on the player
             onDetectedTarget?.Invoke();
         }
 

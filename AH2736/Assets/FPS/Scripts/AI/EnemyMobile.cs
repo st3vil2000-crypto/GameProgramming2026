@@ -187,7 +187,7 @@ namespace Unity.FPS.AI
         }
 
 
-        // function for handling behaviour when an alarm is triggered
+        // ++  function for handling behaviour when an alarm is triggered
         public void OnAlarmTriggered()
         {
             // Find the player
