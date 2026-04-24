@@ -14,6 +14,7 @@
 #### /FPS/Scripts/AI/EnemyCohesion.cs
 Defines enemy motion response to surrounding charges according to Coulomb’s Law.
 Will not interfere with their navigation targets. They can still try following patrol paths, etc.
+
 **Essentially: **
 - Scan surroundings for charged objects
 - Calculate total force vector exerted by these charges
@@ -34,6 +35,7 @@ Abstract class with virtual method, defining the charge-carrying object.
 Primarily stores charge variables:
 - Magnitude
 - Positive or Negative
+
 Charge is quantized and conserved.
 Polymorphism restricted to behaviours that trigger with a change in charge, not how changes are handled themselves.
 
@@ -75,6 +77,7 @@ Code ‘borrowed’ heavily from similar pre-existing ReachObjective class.
 Code also ‘borrowed’ from the pre-existing Health Bar functionality to produce a visual progress marker.
 Result is a spatially defined objective area with a time elapsed progress bar.
 The objective is completed if the player spends enough time inside the area.
+
 Options can set:
 - Length of time required to hold
 - If the timer is retained or resets when the player exits the area
@@ -88,6 +91,7 @@ When something in the scene (e.g. Hold Area Objective) raises an alarm, instruct
 #### /FPS/Scripts/Game/Events.cs
 Pre-existing FPS Microgame script.
 Modified to include AreaAlarmEvent.
+
 Defines unique structure of alarm events, which otherwise inherit from pre-existing GameEvent
 - Origin (Vector3)
 - Range (float)
