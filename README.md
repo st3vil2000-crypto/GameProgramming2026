@@ -11,6 +11,7 @@
 - Encapsulation
 - Unity API
 
+---
 #### 1. /FPS/Scripts/AI/EnemyCohesion.cs
 Defines enemy motion response to surrounding charges according to Coulomb’s Law.
 Will not interfere with their navigation targets. They can still try following patrol paths, etc.
@@ -19,7 +20,7 @@ Will not interfere with their navigation targets. They can still try following p
 - Scan surroundings for charged objects
 - Calculate total force vector exerted by these charges
 - Move according to force vector
-
+---
 
 ### Charge
 
@@ -30,6 +31,7 @@ Will not interfere with their navigation targets. They can still try following p
 - Polymorphism
 - OOP principles and organisation
 
+---
 #### 2. /FPS/Scripts/Gameplay/ChargeBase.cs
 Abstract class with virtual method, defining the charge-carrying object.
 Primarily stores charge variables:
@@ -39,16 +41,19 @@ Primarily stores charge variables:
 Charge is quantized and conserved.
 Polymorphism restricted to behaviours that trigger with a change in charge, not how changes are handled themselves.
 
+---
 #### 3. /FPS/Scripts/Gameplay/ChargeMarker.cs
 Basic ChargeMarker class.
 Inherits default behaviour from ChargeBase (storage place for variables).
 Adds light-based effects to visualize charge value.
 
+---
 #### 4. /FPS/Scripts/Gameplay/ChargeMarkerSparker.cs
 Demonstration for polymorphism.
 Doesn't really do anything special, just gives a different effect for being hit by a charge.
 (effect is just a console log - haven't actually implemented visuals)
 
+---
 #### 5. /FPS/Scripts/Gameplay/Chargeable.cs
 (aka Ichargeable, but keeping convention of FPS Microgame)
 Interface defining the contract for (potential) charge carriers.
@@ -56,11 +61,14 @@ Analogous to Damageable interface ('borrowed' a bit of that pre-existing script)
 - If an object is charged, it has some kind of ChargeMarker
 - If charge is imposed on a chargeable object, tell its ChargeMarker to modify its charge variables.
 
+---
 #### 6. /FPS/Scripts/Gameplay/ProjectileStaticBolt.cs
 Pretty janky proof-of-concept implementation for charge-based weaponry.
 Inherits from pre-existing ProjectileBase.
 Basically a copy of the laser projectile, but adds charge-based effects.
 If a chargeable enemy is hit, then InflictCharge() as well as InflictDamage().
+
+---
 
 ### Hold Area Objective and Alarm Events
 
@@ -70,6 +78,7 @@ If a chargeable enemy is hit, then InflictCharge() as well as InflictDamage().
 - Inheritance
 - Polymorphism
 
+---
 #### 7. FPS/Scripts/Gameplay/Objectives/ObjectiveHoldArea.cs
 Defines the Hold Area Objective.
 Inherits from pre-existing Objective class.
@@ -83,11 +92,13 @@ Options can set:
 - If the timer is retained or resets when the player exits the area
 - If entering the area triggers an alarm
 
+---
 #### 8. /FPS/Scripts/AI/AlarmManager.cs
 Caller for Alarm Events.
 Object is attached to the scene’s GameManager, alongside other managers.
 When something in the scene (e.g. Hold Area Objective) raises an alarm, instruct all enemies within range of the source to respond.
 
+---
 #### 9. /FPS/Scripts/Game/Events.cs
 Pre-existing FPS Microgame script.
 Modified to include AreaAlarmEvent.
@@ -96,11 +107,13 @@ Defines unique structure of alarm events, which otherwise inherit from pre-exist
 - Origin (Vector3)
 - Range (float)
 
+---
 #### 10. /FPS/Scripts/AI/EnemyMobile.cs
 Pre-existing FPS Microgame script
 Modified to include a response to Alarm triggers: OnAlarmTriggered()
 Tells the enemy the location of the player (via DetectionModule) and sets their AI state to Follow.
 
+---
 #### 11. /FPS/Scripts/AI/DetectionModule.cs
 Pre-existing FPS Microgame script.
 Modified with a method that injects the player’s location into the detection system.
